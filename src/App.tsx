@@ -2,8 +2,10 @@ import "./App.css";
 import { nanoid } from "nanoid";
 import { TaskParams } from "./types/task";
 import { Container } from "react-bootstrap";
+import { useState } from "react";
+import TaskBoard from "./components/TaskBoard";
 
-const taskDATA = [
+const taskData = [
   {
     title: "Login sayfası tasarımı",
     description: "Kullanıcıların giriş yapabileceği bir arayüz oluştur.",
@@ -13,7 +15,7 @@ const taskDATA = [
   {
     title: "API entegrasyonu",
     description: "JSON Placeholder API ile veri alışverişi sağla.",
-    status: "Pending",
+    status: "Not Started",
     assignee: "Mehmet",
   },
   {
@@ -33,13 +35,13 @@ const taskDATA = [
     title: "Hata loglama sistemi",
     description:
       "Sistem hatalarını takip edebileceğimiz bir log mekanizması geliştir.",
-    status: "Pending",
+    status: "Not Started",
     assignee: "Burak",
   },
   {
     title: "Performans optimizasyonu",
     description: "Uygulamanın hızını artırmak için gereksiz renderları azalt.",
-    status: "In Review",
+    status: "Not Started",
     assignee: "Deniz",
   },
   {
@@ -52,7 +54,7 @@ const taskDATA = [
     title: "Yetkilendirme mekanizması",
     description:
       "Rol tabanlı yetkilendirme ekleyerek kullanıcı haklarını belirle.",
-    status: "Pending",
+    status: "Not Started",
     assignee: "Merve",
   },
   {
@@ -65,14 +67,14 @@ const taskDATA = [
     title: "Depolama optimizasyonu",
     description:
       "Veri tabanı sorgularını optimize ederek hız ve verimlilik sağla.",
-    status: "In Review",
+    status: "Not Started",
     assignee: "Ece",
   },
 ];
 
 const initialTasks: TaskParams[] = [];
 
-taskDATA.forEach((task) => {
+taskData.forEach((task) => {
   initialTasks.push({
     ...task,
     id: nanoid(),
@@ -80,10 +82,13 @@ taskDATA.forEach((task) => {
 });
 
 function App() {
+const [tasks, setTasks] = useState(initialTasks)
+
   return (
     <>
       <Container>
         <h1 className="text-center mt-5">Task Management</h1>
+        <TaskBoard tasks={tasks} setTasks={setTasks}/>
       </Container>
     </>
   );
