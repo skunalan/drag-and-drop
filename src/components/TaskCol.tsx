@@ -8,10 +8,18 @@ interface TaskColParams {
   tasks: TaskParams[];
 }
 
+
+const statusColor: Record<string, string> = {
+  "Not Started": "text-danger",
+  "In Progress": "text-info",
+  "Completed": "text-success"
+}
+
+
 function TaskCol({status, tasks}: TaskColParams) {
   return (
     <Col>
-      <h4>{status}</h4>
+      <h4 className={`mt-3 text-center ${statusColor[status] || 'text-primary'}`}>{status}</h4>
       <Droppable droppableId={status}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps} style={{minHeight: "400px"}}>

@@ -15,17 +15,17 @@ function TaskCard({ task, index }: TaskCardParams) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          className="mt-3 shadow"
         >
-          <Card.Header>Featured</Card.Header>
+          <Card.Header className="fw-bolder">{task.title}</Card.Header>
           <Card.Body>
-            <Card.Title>{task.title}</Card.Title>
             <Card.Text>
               {task.description}
             </Card.Text>
             <Card.Subtitle>
               Personel: {task.assignee}
             </Card.Subtitle>
-            <Button variant="primary">Go somewhere</Button>
+            <Button className="mt-2" variant="primary">Düzenle</Button>
           </Card.Body>
         </Card>
       )}
