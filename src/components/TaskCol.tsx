@@ -6,6 +6,7 @@ import TaskCard from './TaskCard';
 interface TaskColParams {
   status: string;
   tasks: TaskParams[];
+  handleDelete: (id: string) => void;
 }
 
 
@@ -16,7 +17,7 @@ const statusColor: Record<string, string> = {
 }
 
 
-function TaskCol({status, tasks}: TaskColParams) {
+function TaskCol({status, tasks, handleDelete}: TaskColParams) {
   return (
     <Col>
       <h4 className={`mt-3 text-center ${statusColor[status] || 'text-primary'}`}>{status}</h4>
@@ -24,7 +25,7 @@ function TaskCol({status, tasks}: TaskColParams) {
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps} style={{minHeight: "400px"}}>
             {tasks.map((task, index) => (
-              <TaskCard key={task.id} task={task} index={index}/>
+              <TaskCard key={task.id} task={task} index={index} remove={handleDelete}/>
             ))}
             {provided.placeholder}
           </div>
