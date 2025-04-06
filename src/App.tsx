@@ -1,95 +1,122 @@
 import "./App.css";
 import { nanoid } from "nanoid";
 import { TaskParams } from "./types/task";
-import { Container } from "react-bootstrap";
-import { useState } from "react";
+import { Button, Container, Modal } from "react-bootstrap";
+import { useEffect, useState } from "react";
 import TaskBoard from "./components/TaskBoard";
 
-const taskData = [
-  {
-    title: "Login sayfası tasarımı",
-    description: "Kullanıcıların giriş yapabileceği bir arayüz oluştur.",
-    status: "In Progress",
-    assignee: "Ahmet",
-  },
-  {
-    title: "API entegrasyonu",
-    description: "JSON Placeholder API ile veri alışverişi sağla.",
-    status: "Not Started",
-    assignee: "Mehmet",
-  },
-  {
-    title: "Profil sayfası geliştirme",
-    description:
-      "Kullanıcının bilgilerini düzenleyebileceği bir sayfa oluştur.",
-    status: "Completed",
-    assignee: "Zeynep",
-  },
-  {
-    title: "Dark mode desteği",
-    description: "Uygulamaya karanlık mod seçeneği ekle.",
-    status: "In Progress",
-    assignee: "Elif",
-  },
-  {
-    title: "Hata loglama sistemi",
-    description:
-      "Sistem hatalarını takip edebileceğimiz bir log mekanizması geliştir.",
-    status: "Not Started",
-    assignee: "Burak",
-  },
-  {
-    title: "Performans optimizasyonu",
-    description: "Uygulamanın hızını artırmak için gereksiz renderları azalt.",
-    status: "Not Started",
-    assignee: "Deniz",
-  },
-  {
-    title: "Bildirim sistemi",
-    description: "Kullanıcılara bildirim gönderebileceğimiz bir yapı geliştir.",
-    status: "Completed",
-    assignee: "Cem",
-  },
-  {
-    title: "Yetkilendirme mekanizması",
-    description:
-      "Rol tabanlı yetkilendirme ekleyerek kullanıcı haklarını belirle.",
-    status: "Not Started",
-    assignee: "Merve",
-  },
-  {
-    title: "Unit test ekleme",
-    description: "Kodun doğruluğunu test etmek için birim testler yaz.",
-    status: "In Progress",
-    assignee: "Kerem",
-  },
-  {
-    title: "Depolama optimizasyonu",
-    description:
-      "Veri tabanı sorgularını optimize ederek hız ve verimlilik sağla.",
-    status: "Not Started",
-    assignee: "Ece",
-  },
-];
-
-const initialTasks: TaskParams[] = [];
-
-taskData.forEach((task) => {
-  initialTasks.push({
-    ...task,
-    id: nanoid(),
-  });
-});
-
 function App() {
-const [tasks, setTasks] = useState(initialTasks)
+  const [tasks, setTasks] = useState<TaskParams[]>(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks ? JSON.parse(savedTasks) : [];
+  });
+  const [showModal, setShowModal] = useState(false);
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  const handleAddTask = (newTask: Omit<TaskParams, "id">) => {
+    const task = { ...newTask, id: nanoid() };
+    setTasks((previous) => [...previous, task]);
+  };
 
   return (
     <>
-      <Container>
-        <h1 className="text-center mt-5">Task Management</h1>
-        <TaskBoard tasks={tasks} setTasks={setTasks}/>
-      </Container>
+      <div className="app-container">
+        <Container className="mt-5 py-5 rounded-4 shadow app-content">
+          <div className="text-center mb-5">
+            <h1 className="display-4 fw-bold text-primary mb-3">TASK MANAGEMENT</h1>
+            <h3>
+              Easily manage your tasks and staff assignments. 
+            </h3>
+
+            <ul className="list-unstyled">
+              <li>Create task and assignment cards.</li>
+              <li>Status management with drag and drop feature.</li>
+            </ul>
+              
+            <div className="my-4 d-flex align-items-center justify-content-center">
+              <Button
+                variant="outline-primary"
+                className="btn-lg mt-5"
+                onClick={handleShow}
+              >
+                Add New Task
+              </Button>
+            </div>
+          </div>
+
+          {/*Modal Section*/}
+          <Modal show={showModal} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Add New Task</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <form
+                id="task-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.target as HTMLFormElement;
+                  const title = (
+                    form.elements.namedItem("title") as HTMLInputElement
+                  ).value;
+                  const description = (
+                    form.elements.namedItem("description") as HTMLInputElement
+                  ).value;
+                  const assignee = (
+                    form.elements.namedItem("assignee") as HTMLInputElement
+                  ).value;
+
+                  if (title && description && assignee) {
+                    handleAddTask({
+                      title,
+                      description,
+                      status: "Not Started",
+                      assignee,
+                    });
+                    form.reset();
+                    handleClose();
+                  }
+                }}
+              >
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  className="form-control"
+                  required
+                />
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="Description"
+                  className="form-control mt-2"
+                  required
+                />
+                <input
+                  type="text"
+                  name="assignee"
+                  placeholder="Assignee"
+                  className="form-control mt-2"
+                  required
+                />
+              </form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button type="submit" variant="primary" form="task-form">
+                Add Task
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <TaskBoard tasks={tasks} setTasks={setTasks} />
+        </Container>
+      </div>
     </>
   );
 }
